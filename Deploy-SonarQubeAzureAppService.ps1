@@ -1,7 +1,8 @@
 ﻿param(
     [string]$ApplicationInsightsApiKey = $Env:Deployment_Telemetry_Instrumentation_Key,
     [string]$Edition = $Env:SonarQubeEdition,
-    [string]$Version = $Env:SonarQubeVersion
+    [string]$Version = $Env:SonarQubeVersion,
+    [string]$UrlOverride = $Env:SonarQubeUrlOverride
 )
 
 function TrackTimedEvent {
@@ -93,6 +94,10 @@ TrackTimedEvent -InstrumentationKey $ApplicationInsightsApiKey -EventName 'Downl
 
     $fileName = "$fileNamePrefix-$Version.zip"
     $downloadUri = "https://binaries.sonarsource.com/$downloadFolder/$fileName"
+    
+    if ($UrlOverride) {
+        $downloadUri = $UrlOverride
+    }
 
     if (!$downloadUri -or !$fileName) {
         throw 'Could not get download uri or filename.'
